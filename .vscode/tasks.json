@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/AdsApi/AdsApi.csproj",
+                "${workspaceFolder}/src/AdsApi/AdsApi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/AdsApi/AdsApi.csproj",
+                "${workspaceFolder}/src/AdsApi/AdsApi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/AdsApi/AdsApi.csproj"
+                "${workspaceFolder}/src/AdsApi/AdsApi.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
