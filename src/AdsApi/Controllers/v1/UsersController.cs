@@ -1,6 +1,7 @@
 using Ads.Api.Dtos.V1;
 using Ads.Api.Dtos.V1.Users;
 using Ads.Api.Extensions;
+using Ads.Api.Services.Users;
 using Ads.Core.Interfaces;
 using Ads.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -15,18 +16,21 @@ public class UsersController : ControllerBase
     private readonly UserManager<AdsAppUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly SignInManager<AdsAppUser> _signInnManager;
+    private readonly IUserService _userService;
     private readonly ITokenClaimService _tokenClaimService;
 
     public UsersController(
         UserManager<AdsAppUser> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<AdsAppUser> signInManager,
-        ITokenClaimService tokenClaimService)
+        ITokenClaimService tokenClaimService,
+        IUserService userService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _signInnManager = signInManager;
         _tokenClaimService = tokenClaimService;
+        _userService = userService;
     }
 
     [HttpPost("Register")]
@@ -43,6 +47,8 @@ public class UsersController : ControllerBase
             var errorDto = registerResult.Errors.ToErrorDtos();
             return BadRequest(errorDto);
         }
+
+        await _userService.Create(user.Id);
 
         return Ok(user.ToDto());
     }

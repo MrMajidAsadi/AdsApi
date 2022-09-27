@@ -1,5 +1,7 @@
 using System.Text;
+using Ads.Api.Services.Users;
 using Ads.Core.Interfaces;
+using Ads.Infrastructure.Data;
 using Ads.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +22,11 @@ builder.Services.AddScoped<ITokenClaimService, IdentityTokenClaimService>();
 builder.Services.AddDbContext<AdsAppDbContext>(options => 
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("AdsIdentityDb"));
+});
+
+builder.Services.AddDbContext<AdsDbContext>(options => 
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AdsDb"));
 });
 
 builder.Services.AddIdentity<AdsAppUser, IdentityRole>()
@@ -44,6 +51,9 @@ builder.Services.AddAuthentication(config =>
     };
 });
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 
@@ -63,6 +73,9 @@ using (var scope = app.Services.CreateScope())
         var roleManager = scopedProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var identityContext = scopedProvider.GetRequiredService<AdsAppDbContext>();
         await AdsAppIdentityDbContextSeed.Seed(identityContext, userManager, roleManager);
+
+        var adsDbContext = scopedProvider.GetRequiredService<AdsDbContext>();
+        await AdsDbContextSeed.Seed(adsDbContext, identityContext);    
     }
     catch (Exception ex)
     {
