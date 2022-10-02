@@ -1,7 +1,6 @@
 using Ads.Api.Dtos.V1;
 using Ads.Api.Dtos.V1.Users;
 using Ads.Api.Extensions;
-using Ads.Api.Services.Users;
 using Ads.Core.Interfaces;
 using Ads.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;

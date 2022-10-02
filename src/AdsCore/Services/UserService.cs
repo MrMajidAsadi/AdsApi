@@ -1,7 +1,7 @@
 using Ads.Core.Entities;
 using Ads.Core.Interfaces;
 
-namespace Ads.Api.Services.Users;
+namespace Ads.Core.Services;
 
 public class UserService : IUserService
 {

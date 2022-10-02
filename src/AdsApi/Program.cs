@@ -1,8 +1,8 @@
 using System.Text;
-using Ads.Api.Services.Users;
 using Ads.Core.Interfaces;
 using Ads.Infrastructure.Data;
 using Ads.Infrastructure.Identity;
+using Ads.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

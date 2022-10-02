@@ -1,4 +1,4 @@
-namespace Ads.Api.Services.Users;
+namespace Ads.Core.Interfaces;
 
 public interface IUserService
 {
