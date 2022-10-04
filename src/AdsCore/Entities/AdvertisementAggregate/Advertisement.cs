@@ -20,6 +20,8 @@ public record Advertisement : BaseEntity, IAggregateRoot
 
     public DateTime UpdatedOnUtc { get; private set; }
 
+    public User User { get; private set; }
+
     private readonly List<AdvertisementPicture> _pictures;
     public IReadOnlyCollection<AdvertisementPicture> Pictures => _pictures.AsReadOnly();
 

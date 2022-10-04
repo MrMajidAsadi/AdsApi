@@ -1,12 +1,16 @@
-using System.Net;
 using System.Security.Claims;
-using Ads.Api.Dtos.V1;
 using Ads.Api.Dtos.V1.Advertisements;
+using Ads.Api.Dtos.V1.Users;
+using Ads.Api.Extensions;
+using Ads.Core.Entities;
 using Ads.Core.Entities.AdvertisementAggregate;
 using Ads.Core.Interfaces;
+using Ads.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ads.Api.Controllers.v1;
 
@@ -17,13 +21,22 @@ public class AdvertisementsController : ControllerBase
 {
     private readonly IAdvertisementService _advertisementService;
     private readonly IRepository<Advertisement> _advertisementRepository;
+    private readonly UserManager<AdsAppUser> _userManager;
 
     public AdvertisementsController(
         IAdvertisementService advertisementService,
-        IRepository<Advertisement> advertisementRepository)
+        IRepository<Advertisement> advertisementRepository,
+        UserManager<AdsAppUser> userManager)
     {
         _advertisementService = advertisementService;
         _advertisementRepository = advertisementRepository;
+        _userManager = userManager;
+    }
+
+    private async Task<UserDto> GetUserAsDto(User user)
+    {
+        var identityUser = await _userManager.FindByIdAsync(user?.IdentityId);
+        return identityUser.ToDto();
     }
 
     [HttpPost]
@@ -48,6 +61,25 @@ public class AdvertisementsController : ControllerBase
 
         return Ok(createAdvertisementDto);
     }
+
+    [AllowAnonymous]
+    [HttpGet("advertisementId")]
+    public virtual async Task<IActionResult> GetSingle(int advertisementId)
+    {
+        var advertisement = await _advertisementRepository.GetAll()
+            .Include(a => a.Pictures)
+                .ThenInclude(ap => ap.Picture)
+            .Include(a => a.User)
+            .SingleOrDefaultAsync(a => a.Id == advertisementId);
+
+        if (advertisement is null) return NotFound();
+
+        var dto = advertisement.ToDto();
+        dto.User = await GetUserAsDto(advertisement.User);
+
+        return Ok(dto);
+    }
+
 
     [HttpDelete("advertisementId")]
     public virtual async Task<IActionResult> Delete(int advertisementId)
