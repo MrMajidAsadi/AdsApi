@@ -10,7 +10,7 @@ public class AdvertisementConfiguration : IEntityTypeConfiguration<Advertisement
     public void Configure(EntityTypeBuilder<Advertisement> builder)
     {
         var pictureNavigation = builder.Metadata.FindNavigation(nameof(Advertisement.Pictures));
-        pictureNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+        pictureNavigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
         builder.Property(a => a.Title)
             .HasMaxLength(100);

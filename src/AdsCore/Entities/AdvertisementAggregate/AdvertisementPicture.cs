@@ -17,4 +17,9 @@ public record AdvertisementPicture
         PictureId = pictureId;
         IsMain = isMain;
     }
+
+    public void UpdateDetails(bool isMain)
+    {
+        IsMain = isMain;
+    }
 }

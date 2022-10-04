@@ -37,7 +37,7 @@ public class IdentityTokenClaimService : ITokenClaimService
 
         List<Claim> claims = new()
         {
-            new Claim(ClaimTypes.Name, userName),
+            new Claim(ClaimTypes.Name, internalUser?.Id.ToString()),
             new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
 

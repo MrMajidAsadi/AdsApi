@@ -14,7 +14,7 @@ public class AdsDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
-    public DbSet<Picture> pictures { get; set; }
+    public DbSet<Picture> Pictures { get; set; }
     public DbSet<Advertisement> Advertisements { get; set; }
     public DbSet<AdvertisementPicture> AdvertisementPictures { get; set; }
     public DbSet<AdvertisementCategory> AdvertisementCategories { get; set; }

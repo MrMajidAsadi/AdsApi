@@ -75,6 +75,13 @@ public record Advertisement : BaseEntity, IAggregateRoot
 
         if (existingPicture is not null) return;
 
+        if (isMain)
+        {
+            var prevMainPic = _pictures.SingleOrDefault(p => p.IsMain);
+            if (prevMainPic is not null)
+                prevMainPic.UpdateDetails(false);
+        }
+
         _pictures.Add(new AdvertisementPicture(pictureId, isMain));    
     }
 

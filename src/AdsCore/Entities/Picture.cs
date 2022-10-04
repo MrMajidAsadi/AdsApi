@@ -1,6 +1,8 @@
+using Ads.Core.Interfaces;
+
 namespace Ads.Core.Entities;
 
-public record Picture : BaseEntity
+public record Picture : BaseEntity, IAggregateRoot
 {
     public Picture(
         string mimeType,
@@ -13,6 +15,9 @@ public record Picture : BaseEntity
         AltAttribute = altAttribute;
         TitleAttribute = titleAttribute;
     }
+
+
+    public int UserId { get; private set; }
 
     public string MimeType { get; private set; }
 

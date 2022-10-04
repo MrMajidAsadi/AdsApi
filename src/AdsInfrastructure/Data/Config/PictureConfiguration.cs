@@ -8,6 +8,10 @@ public class PictureConfiguration : IEntityTypeConfiguration<Picture>
 {
     public void Configure(EntityTypeBuilder<Picture> builder)
     {
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(p => p.UserId);
+
         builder.Property(p => p.MimeType)
             .HasMaxLength(20);
         
