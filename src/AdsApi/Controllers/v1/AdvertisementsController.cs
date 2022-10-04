@@ -2,6 +2,7 @@ using System.Net;
 using System.Security.Claims;
 using Ads.Api.Dtos.V1;
 using Ads.Api.Dtos.V1.Advertisements;
+using Ads.Core.Entities.AdvertisementAggregate;
 using Ads.Core.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,14 @@ namespace Ads.Api.Controllers.v1;
 public class AdvertisementsController : ControllerBase
 {
     private readonly IAdvertisementService _advertisementService;
+    private readonly IRepository<Advertisement> _advertisementRepository;
 
-    public AdvertisementsController(IAdvertisementService advertisementService)
+    public AdvertisementsController(
+        IAdvertisementService advertisementService,
+        IRepository<Advertisement> advertisementRepository)
     {
         _advertisementService = advertisementService;
+        _advertisementRepository = advertisementRepository;
     }
 
     [HttpPost]
@@ -42,5 +47,20 @@ public class AdvertisementsController : ControllerBase
             pictureIds);
 
         return Ok(createAdvertisementDto);
+    }
+
+    [HttpDelete("advertisementId")]
+    public virtual async Task<IActionResult> Delete(int advertisementId)
+    {
+        var userId = 0;
+        int.TryParse(User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value, out userId);
+        if (userId is 0) return Unauthorized();
+
+        var advertisement = await _advertisementRepository.Get(advertisementId);
+        if (advertisement is null || advertisement.UserId != userId) return NotFound();
+
+        await _advertisementService.Delete(advertisement);
+
+        return NoContent();
     }
 }

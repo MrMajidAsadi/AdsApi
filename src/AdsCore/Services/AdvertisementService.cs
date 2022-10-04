@@ -53,4 +53,12 @@ public class AdvertisementService : IAdvertisementService
 
         return advertisement;
     }
+
+    public virtual async Task Delete(Advertisement advertisement)
+    {
+        if (advertisement is null) throw new ArgumentNullException(nameof(advertisement));
+
+        advertisement.Delete();
+        await _advertisementRepository.Update(advertisement);
+    }
 }
