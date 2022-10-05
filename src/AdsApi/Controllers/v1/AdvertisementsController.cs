@@ -19,9 +19,15 @@ namespace Ads.Api.Controllers.v1;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class AdvertisementsController : ControllerBase
 {
+    #region Fields
+
     private readonly IAdvertisementService _advertisementService;
     private readonly IRepository<Advertisement> _advertisementRepository;
     private readonly UserManager<AdsAppUser> _userManager;
+
+    #endregion
+
+    #region Ctor
 
     public AdvertisementsController(
         IAdvertisementService advertisementService,
@@ -33,11 +39,17 @@ public class AdvertisementsController : ControllerBase
         _userManager = userManager;
     }
 
+    #endregion
+
+    #region Utilities
+
     private async Task<UserDto> GetUserAsDto(User user)
     {
         var identityUser = await _userManager.FindByIdAsync(user?.IdentityId);
         return identityUser.ToDto();
     }
+
+    #endregion
 
     [HttpPost]
     public virtual async Task<IActionResult> Post([FromBody] CreateAdvertisementDto createAdvertisementDto)
@@ -59,7 +71,10 @@ public class AdvertisementsController : ControllerBase
             createAdvertisementDto.CategoryIds,
             pictureIds);
 
-        return Ok(createAdvertisementDto);
+        var responseDto = advertisement.ToDto();
+        responseDto.User = await GetUserAsDto(advertisement.User);
+
+        return CreatedAtAction(nameof(GetSingle), responseDto);
     }
 
     [AllowAnonymous]
@@ -67,9 +82,11 @@ public class AdvertisementsController : ControllerBase
     public virtual async Task<IActionResult> GetSingle(int advertisementId)
     {
         var advertisement = await _advertisementRepository.GetAll()
+            .AsNoTracking()
             .Include(a => a.Pictures)
                 .ThenInclude(ap => ap.Picture)
             .Include(a => a.User)
+            .Include(a => a.Categories)
             .SingleOrDefaultAsync(a => a.Id == advertisementId);
 
         if (advertisement is null) return NotFound();
@@ -80,6 +97,45 @@ public class AdvertisementsController : ControllerBase
         return Ok(dto);
     }
 
+    [HttpPut("advertisementId")]
+    public virtual async Task<IActionResult> UpdatePut(
+        int advertisementId,
+        [FromBody] UpdateAdvertisementDto updateAdvertisementDto)
+    {
+        if (advertisementId <= 0 || updateAdvertisementDto.Id != advertisementId) return BadRequest();
+
+        var advertisement = await _advertisementRepository.GetAll()
+            .Include(a => a.Pictures)
+            .Include(a => a.Categories)
+            .Include(a => a.User)
+            .SingleOrDefaultAsync(a => a.Id == advertisementId);
+        
+        var currentUserId = 0;
+        int.TryParse(User.Identity?.Name, out currentUserId);
+        
+        if (advertisement is null || currentUserId == 0 || advertisement.UserId != currentUserId)
+            return NotFound();
+
+        Dictionary<int, bool> pictureIds = new();
+        foreach (var pictureDto in updateAdvertisementDto.Pictures!)
+        {
+            pictureIds.Add(pictureDto.PictureId, pictureDto.IsMain);
+        }
+
+        await _advertisementService.Update(
+            advertisement,
+            updateAdvertisementDto.Title,
+            updateAdvertisementDto.Description,
+            currentUserId,
+            updateAdvertisementDto.ShortDescription,
+            updateAdvertisementDto.CategoryIds,
+            pictureIds);
+
+        var responseDto = advertisement.ToDto();
+        responseDto.User = await GetUserAsDto(advertisement.User);
+
+        return Ok(responseDto);
+    }
 
     [HttpDelete("advertisementId")]
     public virtual async Task<IActionResult> Delete(int advertisementId)

@@ -58,7 +58,7 @@ public record Advertisement : BaseEntity, IAggregateRoot
         _categories = categories ?? new();
     }
 
-    public void UpdateDetails(string title, string shortDescription, string description)
+    public void UpdateDetails(string title, string? shortDescription, string description)
     {
         if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
         if (string.IsNullOrEmpty(shortDescription)) throw new ArgumentNullException(nameof(shortDescription));
@@ -104,7 +104,7 @@ public record Advertisement : BaseEntity, IAggregateRoot
         _categories.Add(category);
     }
 
-    public void DeleteCategory(AdvertisementCategory category)
+    public void RemoveCategory(AdvertisementCategory category)
     {
         if (category is null) throw new ArgumentNullException(nameof(category));
         var existingCategory = Categories.SingleOrDefault(c => c.Id == category.Id);
