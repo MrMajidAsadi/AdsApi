@@ -7,11 +7,13 @@ public record Picture : BaseEntity, IAggregateRoot
     public Picture(
         string mimeType,
         string virtualPath,
+        int userId,
         string? altAttribute,
         string? titleAttribute)
     {
         MimeType = mimeType;
         VirtualPath = virtualPath;
+        UserId = userId;
         AltAttribute = altAttribute;
         TitleAttribute = titleAttribute;
     }

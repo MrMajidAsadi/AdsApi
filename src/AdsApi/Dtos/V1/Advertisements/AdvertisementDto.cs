@@ -14,7 +14,7 @@ public class AdvertisementDto
 
     public UserDto User { get; set; }
 
-    public List<PictureDto> PictureUrls { get; set; } = new();
+    public List<AdvertisementPictureDto> PictureUrls { get; set; } = new();
 
     public List<AdvertisementCategoryOverviewDto> Categories { get; set; } = new();
 }

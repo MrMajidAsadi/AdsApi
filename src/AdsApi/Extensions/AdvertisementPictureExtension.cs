@@ -5,9 +5,9 @@ namespace Ads.Api.Extensions;
 
 public static class AdvertisementPictureExtension
 {
-    public static PictureDto ToDto(this AdvertisementPicture ap)
+    public static AdvertisementPictureDto ToDto(this AdvertisementPicture ap)
     {
-        PictureDto output = new()
+        AdvertisementPictureDto output = new()
         {
             Id = ap.PictureId,
             Path = ap.Picture.VirtualPath,
